@@ -39,7 +39,7 @@ It should be specific enough that you can determine that e.g. feature A is in-sc
 ** **
 
 ## 4. Solution Concept
-
+<!--
 This section provides a high-level outline of the solution.
 
 Global Architectural Structure Of the Project:
@@ -51,6 +51,8 @@ This section provides a high-level architecture or a conceptual diagram showing 
 Design Implications and Discussion:
 
 This section discusses the implications and reasons of the design decisions made during the global architecture design.
+-->
+TiDB will be deployed on Kubernetes. To provide automatic scaling, upgrading, monitoring and self-healing, an operator will be created and integrated with the cluster to operate on TiDB CRD. 
 
 ## 5. Acceptance criteria
 
