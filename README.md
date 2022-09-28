@@ -18,11 +18,15 @@ Again, the description should be specific enough that you can determine whether 
 
 ## 3.   Scope and Features Of The Project:
 
-The Scope places a boundary around the solution by detailing the range of features and functions of the project. This section helps to clarify the solution scope and can explicitly state what will not be delivered as well.
+The features of this project will include:
 
-It should be specific enough that you can determine that e.g. feature A is in-scope, while feature B is out-of-scope.
+    Starting and pausing cluster - in scope
+    Scaling in or out of cluster - in scope
+    Monitoring and logging cluster - in scope
+    Backup and restoring cluster - not in scope
 
-** **
+In this project, a separate controller will be created for each feature. Each controller will correspond to a specific CRD.
+
 
 ## 4. Solution Concept
 <!--
@@ -46,15 +50,8 @@ This section discusses the minimum acceptance criteria at the end of the project
 
 ## 6.  Release Planning:
 
-Release planning section describes how the project will deliver incremental sets of features and functions in a series of releases to completion. Identification of user stories associated with iterations that will ease/guide sprint planning sessions is encouraged. Higher level details for the first iteration is expected.
+We will be using SCRUM for developing this project. Every group member will first get familiar with the project and then we will decide the detail of releasing plan next week.
 
-** **
+<!-- Release planning section describes how the project will deliver incremental sets of features and functions in a series of releases to completion. Identification of user stories associated with iterations that will ease/guide sprint planning sessions is encouraged. Higher level details for the first iteration is expected. -->
 
-## General comments
 
-Remember that you can always add features at the end of the semester, but you can't go back in time and gain back time you spent on features that you couldn't complete.
-
-** **
-
-For more help on markdown, see
-https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet
