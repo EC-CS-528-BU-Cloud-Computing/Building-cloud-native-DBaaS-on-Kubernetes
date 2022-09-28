@@ -42,7 +42,7 @@ Design Implications and Discussion:
 
 This section discusses the implications and reasons of the design decisions made during the global architecture design.
 -->
-TiDB will be deployed on Kubernetes. To provide automatic scaling, upgrading, monitoring and self-healing, an operator will be created and integrated with the cluster to operate on TiDB CRD. The operator will provide full life cycle management, to provide scalability and high availability.
+TiDB will be deployed on Kubernetes. To provide automatic scaling, upgrading, monitoring and self-healing, an operator will be created and integrated with the cluster to operate on TiDB CRD. The operator will provide full life cycle management, to provide scalability and high availability. The operator will provide full life cycle management, to guarantee scalability and high availability.
 
 ## 5. Acceptance criteria
 
