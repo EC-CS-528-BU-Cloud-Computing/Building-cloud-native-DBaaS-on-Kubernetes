@@ -10,7 +10,9 @@ The goal for this project is to create an operator that manages the lifecycle of
 
 ## 2. Users/Personas Of The Project:
 
-The principle users of the project are people who manage the workflow and operate with TIDB clusters, where TiDB is a HTAP relational database easily scaled out as other NoSQL databases as well as provide support for data consistency and distributed transaction support. In this project, we will build an operator that manages the lifecycle of TiDB clusters on Kubernetes, which will allow users to manage their TiBD clusters, like starting the cluster, pausing the cluster, and scaling out/in the cluster in a declarative way. As well as build an observability ecosystem for the operator, including metrics, logging, tracing, and alerting. Using modern cloud-native o11y systems, like Prometheus, Grafana, Jaeger, and Loki.
+The principle users of the project are people who manage the workflow and operate with TIDB clusters, where TiDB is a HTAP relational database easily scaled out as other NoSQL databases as well as provide support for data consistency and distributed transaction support. 
+
+In this project, we will build an operator that manages the lifecycle of TiDB clusters on Kubernetes, which will allow users to manage their TiBD clusters, like starting the cluster, pausing the cluster, and scaling out/in the cluster in a declarative way. As well as build an observability ecosystem for the operator, including metrics, logging, tracing, and alerting. Using modern cloud-native o11y systems, like Prometheus, Grafana, Jaeger, and Loki.
 
 ** **
 
