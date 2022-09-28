@@ -1,26 +1,12 @@
 ** **
 
-## Project Description Template
-
-The purpose of this *Project Description* is to present the ideas proposed and decisions made during the preliminary envisioning and inception phase of the project. The goal is to analyze an initial concept proposal at a strategic level of detail and attain/compose an agreement between the project team members and the project customer (mentors and instructors) on the desired solution and overall project direction. You can also add images as you like.
-
-This template proposal contains a number of sections, which you can edit/modify/add/delete/organize as you like.  Some key sections we’d like to have in the proposal are:
-
-- Vision: An executive summary of the vision, goals, users, and general scope of the intended project.
-
-- Solution Concept: the approach the project team will take to meet the business needs. This section also provides an overview of the architectural and technical designs made for implementing the project.
-
-- Scope: the boundary of the solution defined by itemizing the intended features and functions in detail, determining what is out of scope, a release strategy and possibly the criteria by which the solution will be accepted by users and operations.
-
-Project Proposal can be used during the follow-up analysis and design meetings to give context to efforts of more detailed technical specifications and plans. It provides a clear direction for the project team; outlines project goals, priorities, and constraints; and sets expectations.
-
-** **
+# Project Description 
 
 ## 1. Vision and Goals Of The Project:
 
-The vision section describes the final desired state of the project once the project is complete. It also specifies the key goals of the project. This section provides a context for decision-making. A shared vision among all team members can help ensuring that the solution meets the intended goals. A solid vision clarifies perspective and facilitates decision-making.
+The two related prior projects we focus here are TiDB and Kubernetes. TiDB is a HTAP relational database that is readily available and can be easily scaled out. Kerbernetes is the default cloud OS.
 
-The vision statement should be specific enough that you can look at a proposed solution and say either "yes, this meets the vision and goals", or "no, it does not".
+The goal for this project is to create an operator that manages the lifecycle of TiDB clusters on Kubernetes. This operator aims to provide TiDB cluster management on Kubernetes including functions like starting, pausing and scaling out/in clusters in a declarative way. We also plan to build an observability ecosystem for the operator, including metrics, logging, tracing, and alerting.
 
 ## 2. Users/Personas Of The Project:
 
