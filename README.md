@@ -10,9 +10,7 @@ The goal for this project is to create an operator that manages the lifecycle of
 
 ## 2. Users/Personas Of The Project:
 
-This section describes the principal user roles of the project together with the key characteristics of these roles. This information will inform the design and the user scenarios. A complete set of roles helps in ensuring that high-level requirements can be identified in the product backlog.
-
-Again, the description should be specific enough that you can determine whether user A, performing action B, is a member of the set of users the project is designed for.
+The principle users of the project are people who manage the workflow and operate with TIDB clusters, where TiDB is a HTAP relational database easily scaled out as other NoSQL databases as well as provide support for data consistency and distributed transaction support. In this project, we will build an operator that manages the lifecycle of TiDB clusters on Kubernetes, which will allow users to manage their TiBD clusters, like starting the cluster, pausing the cluster, and scaling out/in the cluster in a declarative way. As well as build an observability ecosystem for the operator, including metrics, logging, tracing, and alerting. Using modern cloud-native o11y systems, like Prometheus, Grafana, Jaeger, and Loki.
 
 ** **
 
