@@ -1,6 +1,0 @@
-domain: cs528
-layout:
-- go.kubebuilder.io/v3
-projectName: tidb-operator
-repo: cs528/tidb-operator
-version: "3"
