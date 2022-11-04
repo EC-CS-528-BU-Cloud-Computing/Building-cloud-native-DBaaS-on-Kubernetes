@@ -31,8 +31,8 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/healthz"
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
 
-	tidbopv1alpha1 "tidbOp/api/v1alpha1"
-	"tidbOp/controllers"
+	dbaasv1alpha1 "tidbop/api/v1alpha1"
+	"tidbop/controllers"
 	//+kubebuilder:scaffold:imports
 )
 
@@ -44,7 +44,7 @@ var (
 func init() {
 	utilruntime.Must(clientgoscheme.AddToScheme(scheme))
 
-	utilruntime.Must(tidbopv1alpha1.AddToScheme(scheme))
+	utilruntime.Must(dbaasv1alpha1.AddToScheme(scheme))
 	//+kubebuilder:scaffold:scheme
 }
 
@@ -71,7 +71,7 @@ func main() {
 		Port:                   9443,
 		HealthProbeBindAddress: probeAddr,
 		LeaderElection:         enableLeaderElection,
-		LeaderElectionID:       "c015a953.cs528",
+		LeaderElectionID:       "bfc5f773.cs528",
 		// LeaderElectionReleaseOnCancel defines if the leader should step down voluntarily
 		// when the Manager ends. This requires the binary to immediately end when the
 		// Manager is stopped, otherwise, this setting is unsafe. Setting this significantly
@@ -89,11 +89,11 @@ func main() {
 		os.Exit(1)
 	}
 
-	if err = (&controllers.TidbopReconciler{
+	if err = (&controllers.TidbReconciler{
 		Client: mgr.GetClient(),
 		Scheme: mgr.GetScheme(),
 	}).SetupWithManager(mgr); err != nil {
-		setupLog.Error(err, "unable to create controller", "controller", "Tidbop")
+		setupLog.Error(err, "unable to create controller", "controller", "Tidb")
 		os.Exit(1)
 	}
 	//+kubebuilder:scaffold:builder

@@ -6,9 +6,9 @@ metadata:
   name: manager-role
 rules:
 - apiGroups:
-  - tidbop.cs528
+  - dbaas.cs528
   resources:
-  - tidbops
+  - tidbs
   verbs:
   - create
   - delete
@@ -18,15 +18,15 @@ rules:
   - update
   - watch
 - apiGroups:
-  - tidbop.cs528
+  - dbaas.cs528
   resources:
-  - tidbops/finalizers
+  - tidbs/finalizers
   verbs:
   - update
 - apiGroups:
-  - tidbop.cs528
+  - dbaas.cs528
   resources:
-  - tidbops/status
+  - tidbs/status
   verbs:
   - get
   - patch

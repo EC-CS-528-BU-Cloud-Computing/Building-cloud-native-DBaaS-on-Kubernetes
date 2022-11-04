@@ -2,15 +2,15 @@ domain: cs528
 layout:
 - go.kubebuilder.io/v3
 projectName: tidbop
-repo: tidbOp
+repo: tidbop
 resources:
 - api:
     crdVersion: v1
     namespaced: true
   controller: true
   domain: cs528
-  group: tidbop
-  kind: Tidbop
-  path: tidbOp/api/v1alpha1
+  group: dbaas
+  kind: Tidb
+  path: tidbop/api/v1alpha1
   version: v1alpha1
 version: "3"
