@@ -1,0 +1,12 @@
+apiVersion: dbaas.cs528/v1alpha1
+kind: Tikv
+metadata:
+  labels:
+    app.kubernetes.io/name: tikv
+    app.kubernetes.io/instance: tikv-sample
+    app.kubernetes.io/part-of: tikvop
+    app.kuberentes.io/managed-by: kustomize
+    app.kubernetes.io/created-by: tikvop
+  name: tikv-sample
+spec:
+  # TODO(user): Add fields here
