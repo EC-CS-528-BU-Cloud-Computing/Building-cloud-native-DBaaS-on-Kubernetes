@@ -1,0 +1,31 @@
+# permissions for end users to edit tidbops.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    app.kubernetes.io/name: clusterrole
+    app.kubernetes.io/instance: tidbop-editor-role
+    app.kubernetes.io/component: rbac
+    app.kubernetes.io/created-by: tidbop
+    app.kubernetes.io/part-of: tidbop
+    app.kubernetes.io/managed-by: kustomize
+  name: tidbop-editor-role
+rules:
+- apiGroups:
+  - tidbop.cs528
+  resources:
+  - tidbops
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - tidbop.cs528
+  resources:
+  - tidbops/status
+  verbs:
+  - get

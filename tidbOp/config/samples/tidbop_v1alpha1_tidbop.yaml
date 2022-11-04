@@ -1,0 +1,12 @@
+apiVersion: tidbop.cs528/v1alpha1
+kind: Tidbop
+metadata:
+  labels:
+    app.kubernetes.io/name: tidbop
+    app.kubernetes.io/instance: tidbop-sample
+    app.kubernetes.io/part-of: tidbop
+    app.kuberentes.io/managed-by: kustomize
+    app.kubernetes.io/created-by: tidbop
+  name: tidbop-sample
+spec:
+  # TODO(user): Add fields here
