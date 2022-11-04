@@ -1,0 +1,8 @@
+---
+apiVersion: dbaas.cs528/v1alpha1
+kind: Tidb
+metadata:
+  name: tidb
+spec:
+  imagename: pingcap/tidb:latest
+  healthcheck.interval: 5
