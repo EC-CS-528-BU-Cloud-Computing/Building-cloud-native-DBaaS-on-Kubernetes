@@ -1,4 +1,4 @@
-module tidbop
+module tidbOp
 
 go 1.19
 

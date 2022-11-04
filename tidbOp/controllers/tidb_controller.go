@@ -24,7 +24,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/log"
 
-	dbaasv1alpha1 "tidbop/api/v1alpha1"
+	dbaasv1alpha1 "tidbOp/api/v1alpha1"
 )
 
 // TidbReconciler reconciles a Tidb object
