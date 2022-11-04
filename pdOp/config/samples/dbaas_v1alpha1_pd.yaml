@@ -1,0 +1,12 @@
+apiVersion: dbaas.cs528/v1alpha1
+kind: Pd
+metadata:
+  labels:
+    app.kubernetes.io/name: pd
+    app.kubernetes.io/instance: pd-sample
+    app.kubernetes.io/part-of: pdop
+    app.kuberentes.io/managed-by: kustomize
+    app.kubernetes.io/created-by: pdop
+  name: pd-sample
+spec:
+  # TODO(user): Add fields here

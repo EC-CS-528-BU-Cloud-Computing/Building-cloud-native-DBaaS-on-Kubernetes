@@ -1,0 +1,27 @@
+# permissions for end users to view pds.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    app.kubernetes.io/name: clusterrole
+    app.kubernetes.io/instance: pd-viewer-role
+    app.kubernetes.io/component: rbac
+    app.kubernetes.io/created-by: pdop
+    app.kubernetes.io/part-of: pdop
+    app.kubernetes.io/managed-by: kustomize
+  name: pd-viewer-role
+rules:
+- apiGroups:
+  - dbaas.cs528
+  resources:
+  - pds
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - dbaas.cs528
+  resources:
+  - pds/status
+  verbs:
+  - get
