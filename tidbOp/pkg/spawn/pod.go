@@ -25,11 +25,11 @@ func NewPodForCR(cr *dbaasv1alpha1.Tidb) *corev1.Pod {
 					Image: cr.Spec.Imagename,
 					Ports: []corev1.ContainerPort{
 						{
-							Name:          "SQl_endpoint",
+							Name:          "sql-endpoint",
 							ContainerPort: 4000,
 						},
 						{
-							Name:          "Monitoring",
+							Name:          "monitoring",
 							ContainerPort: 10080,
 						},
 					},
