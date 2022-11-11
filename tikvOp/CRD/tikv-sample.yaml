@@ -1,0 +1,8 @@
+---
+apiVersion: dbaas.cs528/v1alpha1
+kind: Tikv
+metadata:
+  name: tikv
+spec:
+  imagename: pingcap/tikv:latest
+  healthcheck.interval: 5
