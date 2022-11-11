@@ -24,18 +24,30 @@ import (
 // NOTE: json tags are required.  Any new fields you add must have json tags for the fields to be serialized.
 
 // PdSpec defines the desired state of Pd
+
+const (
+	PhasePending  = "PENDING"
+	PhaseCreating = "CREATING"
+	PhaseRunning  = "RUNNING"
+)
+
 type PdSpec struct {
 	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
 
 	// Foo is an example field of Pd. Edit pd_types.go to remove/update
-	Foo string `json:"foo,omitempty"`
+	Imagename string `json:"imagename,omitempty"`
+
+	// HealthCheckInterval is the interval for periodic health check, if pod failed/deleted, it should recreate the pod
+	HealthCheckInterval int `json:"healthcheck.interval,omitempty"`
 }
 
 // PdStatus defines the observed state of Pd
 type PdStatus struct {
 	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
+
+	Phase string `json:"phase,omitempty"`
 }
 
 //+kubebuilder:object:root=true

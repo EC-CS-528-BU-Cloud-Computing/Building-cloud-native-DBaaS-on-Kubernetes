@@ -2,7 +2,7 @@ domain: cs528
 layout:
 - go.kubebuilder.io/v3
 projectName: pdop
-repo: pdOp
+repo: dbaas
 resources:
 - api:
     crdVersion: v1
@@ -11,6 +11,6 @@ resources:
   domain: cs528
   group: dbaas
   kind: Pd
-  path: pdOp/api/v1alpha1
+  path: dbaas/api/v1alpha1
   version: v1alpha1
 version: "3"

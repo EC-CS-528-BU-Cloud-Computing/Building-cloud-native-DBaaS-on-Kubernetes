@@ -1,0 +1,7 @@
+apiVersion: dbaas.cs528/v1alpha1
+kind: Pd
+metadata:
+  name: pd
+spec:
+  imagename: pingcap/pd:latest
+  healthcheck.interval: 5
