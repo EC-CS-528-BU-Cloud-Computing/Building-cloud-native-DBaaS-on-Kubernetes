@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: tidb
+  name: tidb
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tidb
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: tidb
+    spec:
+      containers:
+      - command:
+        - /tidb-server
+        - --path=pd:2379
+        image: pingcap/tidb
+        name: tidb
+        ports:
+        - containerPort: 10080
+        - containerPort: 4000
+        resources: {}
+status: {}

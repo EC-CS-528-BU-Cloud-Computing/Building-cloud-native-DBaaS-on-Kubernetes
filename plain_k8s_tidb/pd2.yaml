@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: pd
+  name: pd
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pd
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: pd
+    spec:
+      containers:
+      - image: pingcap/pd
+        args: ["--client-urls=http://0.0.0.0:2379", "--peer-urls=http://0.0.0.0:2380"]
+        name: pd
+        ports:
+        - containerPort: 2379
+        - containerPort: 2380
+        resources: {}
+        env:
+        - name: HOST
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+status: {}

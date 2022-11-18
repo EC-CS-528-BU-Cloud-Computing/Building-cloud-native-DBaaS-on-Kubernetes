@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: tikv
+  name: tikv
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tikv
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: tikv
+    spec:
+      containers:
+      - command:
+        - /tikv-server
+        - --pd=10.244.0.5:2379
+        image: pingcap/tikv
+        name: tikv
+        ports:
+        - containerPort: 20160
+        resources: {}
+status: {}
