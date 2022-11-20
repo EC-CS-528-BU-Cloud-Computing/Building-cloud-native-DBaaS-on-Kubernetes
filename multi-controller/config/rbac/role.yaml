@@ -1,0 +1,85 @@
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  creationTimestamp: null
+  name: manager-role
+rules:
+- apiGroups:
+  - tidb-cluster.dbaas
+  resources:
+  - pds
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - tidb-cluster.dbaas
+  resources:
+  - pds/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - tidb-cluster.dbaas
+  resources:
+  - pds/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - tidb-cluster.dbaas
+  resources:
+  - tidbs
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - tidb-cluster.dbaas
+  resources:
+  - tidbs/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - tidb-cluster.dbaas
+  resources:
+  - tidbs/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - tidb-cluster.dbaas
+  resources:
+  - tikvs
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - tidb-cluster.dbaas
+  resources:
+  - tikvs/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - tidb-cluster.dbaas
+  resources:
+  - tikvs/status
+  verbs:
+  - get
+  - patch
+  - update
