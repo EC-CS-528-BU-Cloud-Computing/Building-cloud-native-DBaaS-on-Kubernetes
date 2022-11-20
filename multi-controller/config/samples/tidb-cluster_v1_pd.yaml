@@ -1,0 +1,12 @@
+apiVersion: tidb-cluster.dbaas/v1
+kind: Pd
+metadata:
+  labels:
+    app.kubernetes.io/name: pd
+    app.kubernetes.io/instance: pd-sample
+    app.kubernetes.io/part-of: multi-controller
+    app.kuberentes.io/managed-by: kustomize
+    app.kubernetes.io/created-by: multi-controller
+  name: pd-sample
+spec:
+  # TODO(user): Add fields here

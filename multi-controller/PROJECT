@@ -1,0 +1,34 @@
+domain: dbaas
+layout:
+- go.kubebuilder.io/v3
+projectName: multi-controller
+repo: cluster-operator
+resources:
+- api:
+    crdVersion: v1
+    namespaced: true
+  controller: true
+  domain: dbaas
+  group: tidb-cluster
+  kind: Pd
+  path: cluster-operator/api/v1
+  version: v1
+- api:
+    crdVersion: v1
+    namespaced: true
+  controller: true
+  domain: dbaas
+  group: tidb-cluster
+  kind: Tikv
+  path: cluster-operator/api/v1
+  version: v1
+- api:
+    crdVersion: v1
+    namespaced: true
+  controller: true
+  domain: dbaas
+  group: tidb-cluster
+  kind: Tidb
+  path: cluster-operator/api/v1
+  version: v1
+version: "3"
