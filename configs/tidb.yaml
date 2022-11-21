@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app: tidb
+  name: tidb
+spec:
+    containers:
+    - command:
+      - /tidb-server
+      - --path=pd:2379
+      image: pingcap/tidb
+      name: tidb
+      ports:
+      - containerPort: 10080
+      - containerPort: 4000
+      resources: {}
