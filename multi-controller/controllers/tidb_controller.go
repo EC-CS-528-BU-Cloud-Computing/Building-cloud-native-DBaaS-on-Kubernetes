@@ -19,12 +19,18 @@ package controllers
 import (
 	"context"
 
+	"time"
+
+	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/log"
 
+	corev1 "k8s.io/api/core/v1"
+
 	tidbclusterv1 "cluster-operator/api/v1"
+	"cluster-operator/pkg/spawn"
 )
 
 // TidbReconciler reconciles a Tidb object
@@ -32,6 +38,8 @@ type TidbReconciler struct {
 	client.Client
 	Scheme *runtime.Scheme
 }
+
+const defaultTidbImage string = "pingcap/tidb:latest"
 
 //+kubebuilder:rbac:groups=tidb-cluster.dbaas,resources=tidbs,verbs=get;list;watch;create;update;patch;delete
 //+kubebuilder:rbac:groups=tidb-cluster.dbaas,resources=tidbs/status,verbs=get;update;patch
@@ -47,9 +55,137 @@ type TidbReconciler struct {
 // For more details, check Reconcile and its Result here:
 // - https://pkg.go.dev/sigs.k8s.io/controller-runtime@v0.13.0/pkg/reconcile
 func (r *TidbReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
-	_ = log.FromContext(ctx)
+	logger := log.FromContext(ctx)
+	logger.Info("Tidb reconcile")
 
 	// TODO(user): your logic here
+	instance := &tidbclusterv1.Tidb{}
+	err := r.Get(context.TODO(), req.NamespacedName, instance)
+	if err != nil {
+		if errors.IsNotFound(err) {
+			// tikv not found, could have been deleted after
+			// reconcile request, don't requeue
+			return ctrl.Result{}, nil
+		}
+
+		// error reading the object, requeue the request
+		return ctrl.Result{}, err
+	}
+
+	if instance.Status.Phase == "" {
+		instance.Status.Phase = tidbclusterv1.PhasePending
+	}
+
+	if instance.Spec.Imagename == "" {
+		instance.Spec.Imagename = defaultTidbImage
+	}
+
+	if instance.Spec.HealthCheckInterval == 0 {
+		instance.Spec.HealthCheckInterval = 5
+	}
+
+	switch instance.Status.Phase {
+	case tidbclusterv1.PhasePending:
+		logger.Info("Phase: PENDING for creation, now will create")
+		instance.Status.Phase = tidbclusterv1.PhaseCreating
+	case tidbclusterv1.PhaseCreating:
+		logger.Info("Phase: CREATING")
+		pod := spawn.NewTidbPod(instance)
+		err := ctrl.SetControllerReference(instance, pod, r.Scheme)
+		if err != nil {
+			return ctrl.Result{}, err
+		}
+
+		tidbPod := &corev1.Pod{}
+
+		//Check if pod already exist
+		err = r.Get(context.TODO(), req.NamespacedName, tidbPod)
+		if err != nil && errors.IsNotFound(err) {
+			//Pod does not exist create the pod
+			err = r.Create(context.TODO(), pod)
+			if err != nil {
+				return ctrl.Result{}, err
+			}
+			logger.Info("Pod Created successfully", "name", pod.Name)
+			instance.Status.Phase = tidbclusterv1.PhaseRunning
+			err = r.UpdateInstanceStatus(&ctx, instance)
+			if err != nil {
+				return ctrl.Result{}, err
+			}
+			return ctrl.Result{RequeueAfter: time.Duration(instance.Spec.HealthCheckInterval) * time.Second}, nil
+		} else if err != nil {
+			// requeue with err
+			logger.Error(err, "cannot create pod")
+			return ctrl.Result{}, err
+		} else if tidbPod.Status.Phase == corev1.PodFailed {
+			// pod errored out, need to recreate
+			logger.Info("TiDB pod failed", "reason", tidbPod.Status.Reason, "message", tidbPod.Status.Message)
+			// delete failed pod
+			err = r.Delete(context.TODO(), tidbPod)
+			if err != nil {
+				return ctrl.Result{}, err
+			}
+			instance.Status.Phase = tidbclusterv1.PhasePending
+		} else {
+			//Pod already exist and running, do nothing
+			return ctrl.Result{}, nil
+		}
+	case tidbclusterv1.PhaseRunning:
+		logger.Info("Phase: RUNNING")
+
+		tidbPod := &corev1.Pod{}
+
+		//Get current pod
+		err = r.Get(context.TODO(), req.NamespacedName, tidbPod)
+		if err != nil && errors.IsNotFound(err) {
+			//Smh the pod disappeared create the pod
+			/*
+				pod := spawn.NewTidbPod(instance)
+				err := ctrl.SetControllerReference(instance, pod, r.Scheme)
+				if err != nil {
+					return ctrl.Result{}, err
+				}
+				err = r.Create(context.TODO(), pod)
+				if err != nil {
+					return ctrl.Result{}, err
+				}
+				logger.Info("Pod Created successfully", "name", pod.Name)
+				instance.Status.Phase = tidbclusterv1.PhaseRunning
+				err = r.UpdateInstanceStatus(&ctx, instance)
+				if err != nil {
+					return ctrl.Result{}, err
+				}
+				return ctrl.Result{RequeueAfter: time.Duration(instance.Spec.HealthCheckInterval) * time.Second}, nil
+			*/
+			logger.Info("TiDB pod disappeared in RUNNING phase, return to PENDING")
+			instance.Status.Phase = tidbclusterv1.PhasePending
+		} else if err != nil {
+			// requeue with err
+			logger.Error(err, "cannot create TiDB pod")
+			return ctrl.Result{}, err
+		} else if tidbPod.Status.Phase == corev1.PodFailed {
+			// pod errored out, need to recreate
+			logger.Info("TiDB pod failed", "reason", tidbPod.Status.Reason, "message", tidbPod.Status.Message)
+			// delete failed pod
+			err = r.Delete(context.TODO(), tidbPod)
+			if err != nil {
+				return ctrl.Result{}, err
+			}
+			instance.Status.Phase = tidbclusterv1.PhasePending
+		} else {
+			//Pod already exist and running, do nothing
+			return ctrl.Result{RequeueAfter: time.Duration(instance.Spec.HealthCheckInterval) * time.Second}, nil
+		}
+	default:
+		logger.Info("ERROR: Unknown phase")
+		return ctrl.Result{}, nil
+	}
+
+	// update status
+	err = r.UpdateInstanceStatus(&ctx, instance)
+	if err != nil {
+		return ctrl.Result{}, err
+	}
 
 	return ctrl.Result{}, nil
 }
@@ -59,4 +195,9 @@ func (r *TidbReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&tidbclusterv1.Tidb{}).
 		Complete(r)
+}
+
+// SetupWithManager sets up the controller with the Manager.
+func (r *TidbReconciler) UpdateInstanceStatus(ctx *context.Context, instance *tidbclusterv1.Tidb) error {
+	return r.Status().Update(context.TODO(), instance)
 }
