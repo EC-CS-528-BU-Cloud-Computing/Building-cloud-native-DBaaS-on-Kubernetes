@@ -7,11 +7,11 @@ metadata:
 spec:
     containers:
     - command:
-      - /tidb-server
-      - --path=pd:2379
+        - /tidb-server
+        - --path=pd-svc:2379
       image: pingcap/tidb
       name: tidb
       ports:
-      - containerPort: 10080
-      - containerPort: 4000
+        - containerPort: 10080
+        - containerPort: 4000
       resources: {}
