@@ -1,85 +1,46 @@
----
 apiVersion: v1
 kind: Pod
 metadata:
-  name: basic-pd-0
-  namespace: tidb-cluster
   labels:
-    component: pd
+    app: pd
+  name: pd
 spec:
-  containers:
-  - name: basic-pd-0
-    image: pingcap/pd:latest
-    ports:
-      - containerPort: 2380
-        name: server
-        protocol: TCP
+    containers:
+    - image: pingcap/pd
+      name: pd
+      args:
+      - --client-urls=http://0.0.0.0:2379
+      - --advertise-client-urls=http://$(MY_POD_IP):2379
+      - --peer-urls=http://0.0.0.0:2380
+      - --advertise-peer-urls=http://$(MY_POD_IP):2380
+      ports:
       - containerPort: 2379
-        name: client
-        protocol: TCP
-    args:
-      - "--data-dir=/var/lib/pd"
-      - "--client-urls=http://0.0.0.0:2379"
-      - "--advertise-client-urls=http://0.0.0.0:2379"
-      - "--peer-urls=http://0.0.0.0:2380"
-      - "--advertise-peer-urls=http://0.0.0.0:2380"
+      - containerPort: 2380
+      resources: {}
+      env:
+      - name: MY_POD_IP
+        valueFrom:
+          fieldRef:
+            fieldPath: status.podIP
 
-#pd svc
-#---
-#apiVersion: v1
-#kind: Service
-#metadata:
-#  annotations:
-#    pingcap.com/last-applied-configuration: '{"ports":[{"name":"client","protocol":"TCP","port":2379,"targetPort":2379}],"selector":{"app.kubernetes.io/component":"pd","app.kubernetes.io/instance":"basic","app.kubernetes.io/managed-by":"tidb-operator","app.kubernetes.io/name":"tidb-cluster"},"type":"ClusterIP"}'
-#  labels:
-#    component: pd
-#  name: basic-pd
-#  namespace: tidb-cluster
-#spec:
-#  internalTrafficPolicy: Cluster
-#  ipFamilies:
-#  - IPv4
-#  ipFamilyPolicy: SingleStack
-#  ports:
-#  - name: client
-#    port: 2379
-#    protocol: TCP
-#    targetPort: 2379
-#  selector:
-#    component: pd
-#  sessionAffinity: None
-#  type: ClusterIP
-
-#---
-#apiVersion: v1
-#kind: Service
-#metadata:
-#  annotations:
-#    pingcap.com/last-applied-configuration: '{"ports":[{"name":"tcp-peer-2380","protocol":"TCP","port":2380,"targetPort":2380},{"name":"tcp-peer-2379","protocol":"TCP","port":2379,"targetPort":2379}],"selector":{"app.kubernetes.io/component":"pd","app.kubernetes.io/instance":"basic","app.kubernetes.io/managed-by":"tidb-operator","app.kubernetes.io/name":"tidb-cluster"},"clusterIP":"None","publishNotReadyAddresses":true}'
-#  labels:
-#    component: pd
-#  name: basic-pd-peer
-#  namespace: tidb-cluster
-#spec:
-#  clusterIP: None
-#  clusterIPs:
-#  - None
-#  internalTrafficPolicy: Cluster
-#  ipFamilies:
-#  - IPv4
-#  ipFamilyPolicy: SingleStack
-#  ports:
-#  - name: tcp-peer-2380
-#    port: 2380
-#    protocol: TCP
-#    targetPort: 2380
-#  - name: tcp-peer-2379
-#    port: 2379
-#    protocol: TCP
-#    targetPort: 2379
-#  publishNotReadyAddresses: true
-#  selector:
-#    component: pd
-#  sessionAffinity: None
-#  type: ClusterIP
-
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: pd
+  name: pd
+spec:
+  ports:
+  - port: 2379
+    protocol: TCP
+    targetPort: 2379
+    name: port1
+  - port: 2380
+    protocol: TCP
+    targetPort: 2380
+    name: port2
+  selector:
+    app: pd
+status:
+  loadBalancer: {}
