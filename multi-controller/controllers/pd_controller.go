@@ -19,6 +19,8 @@ package controllers
 import (
 	"context"
 
+	"github.com/go-logr/logr"
+	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -31,7 +33,10 @@ import (
 type PdReconciler struct {
 	client.Client
 	Scheme *runtime.Scheme
+	logger logr.Logger
 }
+
+const defaultPdImage string = "pingcap/pd:latest"
 
 //+kubebuilder:rbac:groups=tidb-cluster.dbaas,resources=pds,verbs=get;list;watch;create;update;patch;delete
 //+kubebuilder:rbac:groups=tidb-cluster.dbaas,resources=pds/status,verbs=get;update;patch
@@ -47,9 +52,42 @@ type PdReconciler struct {
 // For more details, check Reconcile and its Result here:
 // - https://pkg.go.dev/sigs.k8s.io/controller-runtime@v0.13.0/pkg/reconcile
 func (r *PdReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
-	_ = log.FromContext(ctx)
+	r.logger = log.FromContext(ctx)
+	r.logger.Info("PD reconcile")
 
 	// TODO(user): your logic here
+	instance := &tidbclusterv1.Pd{}
+	err := r.Get(context.TODO(), req.NamespacedName, instance)
+	if err != nil {
+		if errors.IsNotFound(err) {
+			// pd not found, could have been deleted after
+			// reconcile request, don't requeue
+			r.logger.Info("PD instance not found, could be deleted, NOT REQUEUED")
+			return ctrl.Result{}, nil
+		}
+
+		// error reading the object, requeue the request
+		r.logger.Info("PD instance read err, REQUEUED")
+		return ctrl.Result{}, err
+	}
+
+	if instance.Status.Phase == "" {
+		instance.Status.Phase = tidbclusterv1.PhaseCreating
+	}
+
+	if instance.Spec.Imagename == "" {
+		instance.Spec.Imagename = defaultPdImage
+	}
+
+	if instance.Spec.HealthCheckInterval == 0 {
+		instance.Spec.HealthCheckInterval = 5
+	}
+
+	switch instance.Status.Phase {
+	case tidbclusterv1.PhaseCreating:
+		r.logger.Info("Phase: PD CREATING")
+
+	}
 
 	return ctrl.Result{}, nil
 }
