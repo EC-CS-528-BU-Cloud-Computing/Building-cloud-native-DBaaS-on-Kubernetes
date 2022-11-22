@@ -26,7 +26,10 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/log"
 
+	corev1 "k8s.io/api/core/v1"
+
 	tidbclusterv1 "cluster-operator/api/v1"
+	"cluster-operator/pkg/spawn"
 )
 
 // PdReconciler reconciles a Pd object
@@ -56,8 +59,8 @@ func (r *PdReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Re
 	r.logger.Info("PD reconcile")
 
 	// TODO(user): your logic here
-	instance := &tidbclusterv1.Pd{}
-	err := r.Get(context.TODO(), req.NamespacedName, instance)
+	pdInstance := &tidbclusterv1.Pd{}
+	err := r.Get(context.TODO(), req.NamespacedName, pdInstance)
 	if err != nil {
 		if errors.IsNotFound(err) {
 			// pd not found, could have been deleted after
@@ -71,24 +74,46 @@ func (r *PdReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Re
 		return ctrl.Result{}, err
 	}
 
-	if instance.Status.Phase == "" {
-		instance.Status.Phase = tidbclusterv1.PhaseCreating
+	if pdInstance.Status.Phase == "" {
+		pdInstance.Status.Phase = tidbclusterv1.PhaseCreating_PD_SVC
 	}
 
-	if instance.Spec.Imagename == "" {
-		instance.Spec.Imagename = defaultPdImage
+	if pdInstance.Spec.Imagename == "" {
+		pdInstance.Spec.Imagename = defaultPdImage
 	}
 
-	if instance.Spec.HealthCheckInterval == 0 {
-		instance.Spec.HealthCheckInterval = 5
+	if pdInstance.Spec.HealthCheckInterval == 0 {
+		pdInstance.Spec.HealthCheckInterval = 5
 	}
 
-	switch instance.Status.Phase {
-	case tidbclusterv1.PhaseCreating:
-		r.logger.Info("Phase: PD CREATING")
+	switch pdInstance.Status.Phase {
+	case tidbclusterv1.PhaseCreating_PD_SVC:
+		r.logger.Info("Phase: PD CREATING SVC")
+		pdSVC := spawn.CreatePdSVC(pdInstance)
+		err := ctrl.SetControllerReference(pdInstance, pdSVC, r.Scheme)
+		if err != nil {
+			return ctrl.Result{}, err
+		}
+		r.logger.Info("PD svc created successfully")
 
+		pdExistingSVC := &corev1.Service{}
+
+		//Check if service already exist
+		err = r.Get(context.TODO(), req.NamespacedName, pdExistingSVC)
+
+		if err != nil {
+			//svc does not exist
+			if errors.IsNotFound(err) {
+				err = r.Create(context.TODO(), pdSVC)
+			}
+
+			//failed to create svc, requeue with error
+			if err != nil {
+				return ctrl.Result{}, err
+			}
+		}
 	}
-
+	//TODO: think about service creation logic
 	return ctrl.Result{}, nil
 }
 
