@@ -61,8 +61,8 @@ func (r *TidbReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.
 	r.logger.Info("Tidb reconcile")
 
 	// TODO(user): your logic here
-	instance := &tidbclusterv1.Tidb{}
-	err := r.Get(context.TODO(), req.NamespacedName, instance)
+	tidbInstance := &tidbclusterv1.Tidb{}
+	err := r.Get(context.TODO(), req.NamespacedName, tidbInstance)
 	if err != nil {
 		if errors.IsNotFound(err) {
 			// tikv not found, could have been deleted after
@@ -76,32 +76,32 @@ func (r *TidbReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.
 		return ctrl.Result{}, err
 	}
 
-	if instance.Status.Phase == "" {
-		instance.Status.Phase = tidbclusterv1.PhasePending
+	if tidbInstance.Status.Phase == "" {
+		tidbInstance.Status.Phase = tidbclusterv1.PhasePending_TiDB
 	}
 
-	if instance.Spec.Imagename == "" {
-		instance.Spec.Imagename = defaultTidbImage
+	if tidbInstance.Spec.Imagename == "" {
+		tidbInstance.Spec.Imagename = defaultTidbImage
 	}
 
-	if instance.Spec.HealthCheckInterval == 0 {
-		instance.Spec.HealthCheckInterval = 5
+	if tidbInstance.Spec.HealthCheckInterval == 0 {
+		tidbInstance.Spec.HealthCheckInterval = 5
 	}
 
-	switch instance.Status.Phase {
-	case tidbclusterv1.PhasePending:
+	switch tidbInstance.Status.Phase {
+	case tidbclusterv1.PhasePending_TiDB:
 		//Check if pd is running
 		if !r.isPdRunning(ctx, req) {
 			r.logger.Info("Pd instance not ready")
-			return ctrl.Result{RequeueAfter: time.Duration(instance.Spec.HealthCheckInterval) * time.Second}, nil
+			return ctrl.Result{RequeueAfter: time.Duration(tidbInstance.Spec.HealthCheckInterval) * time.Second}, nil
 		} else {
 			r.logger.Info("Phase: Pd is running, TiDB PENDING for creation, now will create")
-			instance.Status.Phase = tidbclusterv1.PhaseCreating
+			tidbInstance.Status.Phase = tidbclusterv1.PhaseCreating_TiDB
 		}
-	case tidbclusterv1.PhaseCreating:
+	case tidbclusterv1.PhaseCreating_TiDB:
 		r.logger.Info("Phase: CREATING")
-		pod := spawn.NewTidbPod(instance)
-		err := ctrl.SetControllerReference(instance, pod, r.Scheme)
+		pod := spawn.NewTidbPod(tidbInstance)
+		err := ctrl.SetControllerReference(tidbInstance, pod, r.Scheme)
 		if err != nil {
 			return ctrl.Result{}, err
 		}
@@ -117,12 +117,12 @@ func (r *TidbReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.
 				return ctrl.Result{}, err
 			}
 			r.logger.Info("Pod Created successfully", "name", pod.Name)
-			instance.Status.Phase = tidbclusterv1.PhaseRunning
-			err = r.UpdateInstanceStatus(&ctx, instance)
+			tidbInstance.Status.Phase = tidbclusterv1.PhaseRunning_TiDB
+			err = r.UpdateInstanceStatus(&ctx, tidbInstance)
 			if err != nil {
 				return ctrl.Result{}, err
 			}
-			return ctrl.Result{RequeueAfter: time.Duration(instance.Spec.HealthCheckInterval) * time.Second}, nil
+			return ctrl.Result{RequeueAfter: time.Duration(tidbInstance.Spec.HealthCheckInterval) * time.Second}, nil
 		} else if err != nil {
 			// requeue with err
 			r.logger.Error(err, "cannot create pod")
@@ -135,12 +135,12 @@ func (r *TidbReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.
 			if err != nil {
 				return ctrl.Result{}, err
 			}
-			instance.Status.Phase = tidbclusterv1.PhasePending
+			tidbInstance.Status.Phase = tidbclusterv1.PhasePending_TiDB
 		} else {
 			//Pod already exist and running, do nothing
 			return ctrl.Result{}, nil
 		}
-	case tidbclusterv1.PhaseRunning:
+	case tidbclusterv1.PhaseRunning_TiDB:
 		r.logger.Info("Phase: RUNNING")
 
 		tidbPod := &corev1.Pod{}
@@ -168,7 +168,7 @@ func (r *TidbReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.
 				return ctrl.Result{RequeueAfter: time.Duration(instance.Spec.HealthCheckInterval) * time.Second}, nil
 			*/
 			r.logger.Info("TiDB pod disappeared in RUNNING phase, return to PENDING")
-			instance.Status.Phase = tidbclusterv1.PhasePending
+			tidbInstance.Status.Phase = tidbclusterv1.PhasePending_TiDB
 		} else if err != nil {
 			// requeue with err
 			r.logger.Error(err, "cannot create TiDB pod")
@@ -181,10 +181,10 @@ func (r *TidbReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.
 			if err != nil {
 				return ctrl.Result{}, err
 			}
-			instance.Status.Phase = tidbclusterv1.PhasePending
+			tidbInstance.Status.Phase = tidbclusterv1.PhasePending_TiDB
 		} else {
 			//Pod already exist and running, do nothing
-			return ctrl.Result{RequeueAfter: time.Duration(instance.Spec.HealthCheckInterval) * time.Second}, nil
+			return ctrl.Result{RequeueAfter: time.Duration(tidbInstance.Spec.HealthCheckInterval) * time.Second}, nil
 		}
 	default:
 		r.logger.Info("ERROR: Unknown phase")
@@ -192,7 +192,7 @@ func (r *TidbReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.
 	}
 
 	// update status
-	err = r.UpdateInstanceStatus(&ctx, instance)
+	err = r.UpdateInstanceStatus(&ctx, tidbInstance)
 	if err != nil {
 		return ctrl.Result{}, err
 	}
@@ -208,8 +208,8 @@ func (r *TidbReconciler) SetupWithManager(mgr ctrl.Manager) error {
 }
 
 // SetupWithManager sets up the controller with the Manager.
-func (r *TidbReconciler) UpdateInstanceStatus(ctx *context.Context, instance *tidbclusterv1.Tidb) error {
-	return r.Status().Update(context.TODO(), instance)
+func (r *TidbReconciler) UpdateInstanceStatus(ctx *context.Context, tidbInstance *tidbclusterv1.Tidb) error {
+	return r.Status().Update(context.TODO(), tidbInstance)
 }
 
 // Check pd running
@@ -223,7 +223,7 @@ func (r *TidbReconciler) isPdRunning(ctx context.Context, req ctrl.Request) bool
 			r.logger.Info("Error reading pd instance")
 		}
 		return false
-	} else if pdInstance.Status.Phase != tidbclusterv1.PhaseRunning {
+	} else if pdInstance.Status.Phase != tidbclusterv1.PhaseRunning_TiDB {
 		r.logger.Info("Pd instance not running")
 		return false
 	}
