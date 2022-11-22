@@ -22,6 +22,11 @@ import (
 
 // EDIT THIS FILE!  THIS IS SCAFFOLDING FOR YOU TO OWN!
 // NOTE: json tags are required.  Any new fields you add must have json tags for the fields to be serialized.
+const (
+	PhasePending_PD  = "PENDING_PD"
+	PhaseCreating_PD = "CREATING_PD"
+	PhaseRunning_PD  = "RUNNING_PD"
+)
 
 // PdSpec defines the desired state of Pd
 type PdSpec struct {
