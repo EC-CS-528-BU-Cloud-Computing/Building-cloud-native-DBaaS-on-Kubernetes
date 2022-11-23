@@ -195,18 +195,22 @@ func (r *TikvReconciler) updateTikvInstanceStatus(ctx *context.Context, instance
 
 // Check pd running
 func (r *TikvReconciler) isPdRunning(ctx context.Context, req ctrl.Request) bool {
-	pdInstance := &tidbclusterv1.Pd{}
-	err := r.Get(context.TODO(), req.NamespacedName, pdInstance)
-	if err != nil {
-		if errors.IsNotFound(err) {
-			r.logger.Info("Pd instance not found")
-		} else {
-			r.logger.Info("Error reading pd instance")
+	/*
+		pdInstance := &tidbclusterv1.Pd{}
+		err := r.Get(context.TODO(), req.NamespacedName, pdInstance)
+		if err != nil {
+			if errors.IsNotFound(err) {
+				r.logger.Info("Pd instance not found")
+			} else {
+				r.logger.Info("Error reading pd instance")
+			}
+			return false
+		} else if pdInstance.Status.Phase != tidbclusterv1.PhaseRunning_TiKV {
+			r.logger.Info("Pd instance not running")
+			return false
 		}
-		return false
-	} else if pdInstance.Status.Phase != tidbclusterv1.PhaseRunning_TiKV {
-		r.logger.Info("Pd instance not running")
-		return false
-	}
+		return true
+	*/
+	time.Sleep(10 * time.Second)
 	return true
 }

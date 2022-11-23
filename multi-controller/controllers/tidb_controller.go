@@ -214,18 +214,22 @@ func (r *TidbReconciler) updateTidbInstanceStatus(ctx *context.Context, tidbInst
 
 // Check pd running
 func (r *TidbReconciler) isPdRunning(ctx context.Context, req ctrl.Request) bool {
-	pdInstance := &tidbclusterv1.Pd{}
-	err := r.Get(context.TODO(), req.NamespacedName, pdInstance)
-	if err != nil {
-		if errors.IsNotFound(err) {
-			r.logger.Info("Pd instance not found")
-		} else {
-			r.logger.Info("Error reading pd instance")
+	/*
+		pdInstance := &tidbclusterv1.Pd{}
+		err := r.Get(context.TODO(), req.NamespacedName, pdInstance)
+		if err != nil {
+			if errors.IsNotFound(err) {
+				r.logger.Info("Pd instance not found")
+			} else {
+				r.logger.Info("Error reading pd instance")
+			}
+			return false
+		} else if pdInstance.Status.Phase != tidbclusterv1.PhaseRunning_TiDB {
+			r.logger.Info("Pd instance not running")
+			return false
 		}
-		return false
-	} else if pdInstance.Status.Phase != tidbclusterv1.PhaseRunning_TiDB {
-		r.logger.Info("Pd instance not running")
-		return false
-	}
+		return true
+	*/
+	time.Sleep(10 * time.Second)
 	return true
 }
