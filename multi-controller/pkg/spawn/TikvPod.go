@@ -25,11 +25,12 @@ func NewTikvPod(cr *tidbclusterv1.Tikv) *corev1.Pod {
 					Image: cr.Spec.Imagename,
 					Ports: []corev1.ContainerPort{
 						{
-							Name:          "tikvPod",
+							Name:          "tikv-port",
 							ContainerPort: 20160,
 						},
 					},
-					Command: []string{"/tikv-server", "--path=pd-svc:2379"},
+					Command: []string{"/tikv-server"},
+					Args:    []string{"--pd=pd-svc:2379"},
 				},
 			},
 			RestartPolicy: corev1.RestartPolicyOnFailure,
