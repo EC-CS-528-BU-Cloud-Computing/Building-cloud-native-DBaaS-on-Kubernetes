@@ -23,9 +23,9 @@ import (
 // EDIT THIS FILE!  THIS IS SCAFFOLDING FOR YOU TO OWN!
 // NOTE: json tags are required.  Any new fields you add must have json tags for the fields to be serialized.
 const (
-	PhasePending  = "PENDING"
-	PhaseCreating = "CREATING"
-	PhaseRunning  = "RUNNING"
+	PhasePending_TiKV  = "PENDING_TiKV"
+	PhaseCreating_TiKV = "CREATING_TiKV"
+	PhaseRunning_TiKV  = "RUNNING_TiKV"
 )
 
 // TikvSpec defines the desired state of Tikv

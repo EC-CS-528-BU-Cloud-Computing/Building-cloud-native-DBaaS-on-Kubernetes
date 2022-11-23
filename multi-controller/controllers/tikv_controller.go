@@ -77,7 +77,7 @@ func (r *TikvReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.
 	}
 
 	if instance.Status.Phase == "" {
-		instance.Status.Phase = tidbclusterv1.PhasePending
+		instance.Status.Phase = tidbclusterv1.PhasePending_TiKV
 	}
 
 	if instance.Spec.Imagename == "" {
@@ -89,16 +89,16 @@ func (r *TikvReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.
 	}
 
 	switch instance.Status.Phase {
-	case tidbclusterv1.PhasePending:
+	case tidbclusterv1.PhasePending_TiKV:
 		//Check if pd is running
 		if !r.isPdRunning(ctx, req) {
 			r.logger.Info("Pd instance not ready")
 			return ctrl.Result{RequeueAfter: time.Duration(instance.Spec.HealthCheckInterval) * time.Second}, nil
 		} else {
 			r.logger.Info("Phase: Pd is running, Tikv PENDING for creation, now will create")
-			instance.Status.Phase = tidbclusterv1.PhaseCreating
+			instance.Status.Phase = tidbclusterv1.PhaseCreating_TiKV
 		}
-	case tidbclusterv1.PhaseCreating:
+	case tidbclusterv1.PhaseCreating_TiKV:
 		r.logger.Info("Phase: CREATING")
 		pod := spawn.NewTikvPod(instance)
 		err := ctrl.SetControllerReference(instance, pod, r.Scheme)
@@ -117,7 +117,7 @@ func (r *TikvReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.
 				return ctrl.Result{}, err
 			}
 			r.logger.Info("Pod Created successfully", "name", pod.Name)
-			instance.Status.Phase = tidbclusterv1.PhaseRunning
+			instance.Status.Phase = tidbclusterv1.PhaseRunning_TiKV
 			err = r.updateTikvInstanceStatus(&ctx, instance)
 			if err != nil {
 				return ctrl.Result{}, err
@@ -135,12 +135,12 @@ func (r *TikvReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.
 			if err != nil {
 				return ctrl.Result{}, err
 			}
-			instance.Status.Phase = tidbclusterv1.PhasePending
+			instance.Status.Phase = tidbclusterv1.PhasePending_TiKV
 		} else {
 			//Pod already exist and running, do nothing
 			return ctrl.Result{}, nil
 		}
-	case tidbclusterv1.PhaseRunning:
+	case tidbclusterv1.PhaseRunning_TiKV:
 		r.logger.Info("Phase: RUNNING")
 
 		tikvPod := &corev1.Pod{}
@@ -149,7 +149,7 @@ func (r *TikvReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.
 		err = r.Get(context.TODO(), req.NamespacedName, tikvPod)
 		if err != nil && errors.IsNotFound(err) {
 			r.logger.Info("TiKV pod disappeared in RUNNING phase, return to PENDING")
-			instance.Status.Phase = tidbclusterv1.PhasePending
+			instance.Status.Phase = tidbclusterv1.PhasePending_TiKV
 		} else if err != nil {
 			// requeue with err
 			r.logger.Error(err, "cannot create TiKV pod")
@@ -162,7 +162,7 @@ func (r *TikvReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.
 			if err != nil {
 				return ctrl.Result{}, err
 			}
-			instance.Status.Phase = tidbclusterv1.PhasePending
+			instance.Status.Phase = tidbclusterv1.PhasePending_TiKV
 		} else {
 			//Pod already exist and running, do nothing
 			return ctrl.Result{RequeueAfter: time.Duration(instance.Spec.HealthCheckInterval) * time.Second}, nil
@@ -204,7 +204,7 @@ func (r *TikvReconciler) isPdRunning(ctx context.Context, req ctrl.Request) bool
 			r.logger.Info("Error reading pd instance")
 		}
 		return false
-	} else if pdInstance.Status.Phase != tidbclusterv1.PhaseRunning {
+	} else if pdInstance.Status.Phase != tidbclusterv1.PhaseRunning_TiKV {
 		r.logger.Info("Pd instance not running")
 		return false
 	}
