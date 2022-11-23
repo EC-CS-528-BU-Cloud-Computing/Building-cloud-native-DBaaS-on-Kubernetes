@@ -118,7 +118,7 @@ func (r *TidbReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.
 			}
 			r.logger.Info("Pod Created successfully", "name", pod.Name)
 			tidbInstance.Status.Phase = tidbclusterv1.PhaseRunning_TiDB
-			err = r.UpdateInstanceStatus(&ctx, tidbInstance)
+			err = r.updateTidbInstanceStatus(&ctx, tidbInstance)
 			if err != nil {
 				return ctrl.Result{}, err
 			}
@@ -192,7 +192,7 @@ func (r *TidbReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.
 	}
 
 	// update status
-	err = r.UpdateInstanceStatus(&ctx, tidbInstance)
+	err = r.updateTidbInstanceStatus(&ctx, tidbInstance)
 	if err != nil {
 		return ctrl.Result{}, err
 	}
@@ -207,8 +207,8 @@ func (r *TidbReconciler) SetupWithManager(mgr ctrl.Manager) error {
 		Complete(r)
 }
 
-// SetupWithManager sets up the controller with the Manager.
-func (r *TidbReconciler) UpdateInstanceStatus(ctx *context.Context, tidbInstance *tidbclusterv1.Tidb) error {
+// Update the status of tidb instance
+func (r *TidbReconciler) updateTidbInstanceStatus(ctx *context.Context, tidbInstance *tidbclusterv1.Tidb) error {
 	return r.Status().Update(context.TODO(), tidbInstance)
 }
 

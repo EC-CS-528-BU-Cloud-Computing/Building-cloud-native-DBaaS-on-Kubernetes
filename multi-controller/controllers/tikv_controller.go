@@ -118,7 +118,7 @@ func (r *TikvReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.
 			}
 			r.logger.Info("Pod Created successfully", "name", pod.Name)
 			instance.Status.Phase = tidbclusterv1.PhaseRunning
-			err = r.UpdateInstanceStatus(&ctx, instance)
+			err = r.updateTikvInstanceStatus(&ctx, instance)
 			if err != nil {
 				return ctrl.Result{}, err
 			}
@@ -173,7 +173,7 @@ func (r *TikvReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.
 	}
 
 	// update status
-	err = r.UpdateInstanceStatus(&ctx, instance)
+	err = r.updateTikvInstanceStatus(&ctx, instance)
 	if err != nil {
 		return ctrl.Result{}, err
 	}
@@ -189,7 +189,7 @@ func (r *TikvReconciler) SetupWithManager(mgr ctrl.Manager) error {
 }
 
 // SetupWithManager sets up the controller with the Manager.
-func (r *TikvReconciler) UpdateInstanceStatus(ctx *context.Context, instance *tidbclusterv1.Tikv) error {
+func (r *TikvReconciler) updateTikvInstanceStatus(ctx *context.Context, instance *tidbclusterv1.Tikv) error {
 	return r.Status().Update(context.TODO(), instance)
 }
 
