@@ -90,6 +90,7 @@ func (r *TikvReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.
 
 	switch instance.Status.Phase {
 	case tidbclusterv1.PhasePending_TiKV:
+		r.logger.Info("Phase: TIKV PENDING")
 		//Check if pd is running
 		if !r.isPdRunning(ctx, req) {
 			r.logger.Info("Pd instance not ready")
@@ -99,7 +100,7 @@ func (r *TikvReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.
 			instance.Status.Phase = tidbclusterv1.PhaseCreating_TiKV
 		}
 	case tidbclusterv1.PhaseCreating_TiKV:
-		r.logger.Info("Phase: CREATING")
+		r.logger.Info("Phase: TIKV CREATING")
 		pod := spawn.NewTikvPod(instance)
 		err := ctrl.SetControllerReference(instance, pod, r.Scheme)
 		if err != nil {
@@ -141,7 +142,7 @@ func (r *TikvReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.
 			return ctrl.Result{}, nil
 		}
 	case tidbclusterv1.PhaseRunning_TiKV:
-		r.logger.Info("Phase: RUNNING")
+		r.logger.Info("Phase: TIKV RUNNING")
 
 		tikvPod := &corev1.Pod{}
 
