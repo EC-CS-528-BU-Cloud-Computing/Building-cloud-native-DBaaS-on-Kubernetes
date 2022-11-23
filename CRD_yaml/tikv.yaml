@@ -7,12 +7,12 @@ metadata:
 spec:
     containers:
     - command:
-      - /tikv-server
-      - --pd=pd:2379
+        - /tikv-server
+        #- --pd=pd-svc:2379
       image: pingcap/tikv
+      args:
+        - --pd=pd-svc:2379"
       name: tikv
       ports:
-      - containerPort: 20160
+        - containerPort: 20160
       resources: {}
-    
-status: {}

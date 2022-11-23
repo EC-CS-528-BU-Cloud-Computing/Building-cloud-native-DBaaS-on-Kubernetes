@@ -35,12 +35,21 @@ spec:
           spec:
             description: PdSpec defines the desired state of Pd
             properties:
-              foo:
-                description: Foo is an example field of Pd. Edit pd_types.go to remove/update
+              healthcheck.interval:
+                description: HealthCheckInterval is the interval for periodic health
+                  check, if pod failed/deleted, it should recreate the pod
+                type: integer
+              imagename:
+                description: Imagename is the name of image this Tidb instance is
+                  using
                 type: string
             type: object
           status:
             description: PdStatus defines the observed state of Pd
+            properties:
+              phase:
+                description: Phase represents current phase of tidb
+                type: string
             type: object
         type: object
     served: true

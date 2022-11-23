@@ -9,19 +9,19 @@ spec:
     - image: pingcap/pd
       name: pd
       args:
-      - --client-urls=http://0.0.0.0:2379
-      - --advertise-client-urls=http://$(MY_POD_IP):2379
-      - --peer-urls=http://0.0.0.0:2380
-      - --advertise-peer-urls=http://$(MY_POD_IP):2380
+        - --client-urls=http://0.0.0.0:2379
+        - --advertise-client-urls=http://$(MY_POD_IP):2379
+        - --peer-urls=http://0.0.0.0:2380
+        - --advertise-peer-urls=http://$(MY_POD_IP):2380
       ports:
-      - containerPort: 2379
-      - containerPort: 2380
+        - containerPort: 2379
+        - containerPort: 2380
       resources: {}
       env:
-      - name: MY_POD_IP
-        valueFrom:
-          fieldRef:
-            fieldPath: status.podIP
+        - name: MY_POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
 
 ---
 apiVersion: v1
@@ -29,7 +29,7 @@ kind: Service
 metadata:
   labels:
     app: pd
-  name: pd
+  name: pd-svc
 spec:
   ports:
   - port: 2379
@@ -42,5 +42,3 @@ spec:
     name: port2
   selector:
     app: pd
-status:
-  loadBalancer: {}
