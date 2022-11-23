@@ -92,14 +92,14 @@ func (r *TidbReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.
 	case tidbclusterv1.PhasePending_TiDB:
 		//Check if pd is running
 		if !r.isPdRunning(ctx, req) {
-			r.logger.Info("Pd instance not ready")
+			r.logger.Info("TIDB: Pd instance not ready")
 			return ctrl.Result{RequeueAfter: time.Duration(tidbInstance.Spec.HealthCheckInterval) * time.Second}, nil
 		} else {
 			r.logger.Info("Phase: Pd is running, TiDB PENDING for creation, now will create")
 			tidbInstance.Status.Phase = tidbclusterv1.PhaseCreating_TiDB
 		}
 	case tidbclusterv1.PhaseCreating_TiDB:
-		r.logger.Info("Phase: CREATING")
+		r.logger.Info("Phase: TIDB CREATING")
 		pod := spawn.NewTidbPod(tidbInstance)
 		err := ctrl.SetControllerReference(tidbInstance, pod, r.Scheme)
 		if err != nil {
@@ -116,7 +116,7 @@ func (r *TidbReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.
 			if err != nil {
 				return ctrl.Result{}, err
 			}
-			r.logger.Info("Pod Created successfully", "name", pod.Name)
+			r.logger.Info("Tidb Pod Created successfully", "name", pod.Name)
 			tidbInstance.Status.Phase = tidbclusterv1.PhaseRunning_TiDB
 			err = r.updateTidbInstanceStatus(&ctx, tidbInstance)
 			if err != nil {
@@ -125,7 +125,7 @@ func (r *TidbReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.
 			return ctrl.Result{RequeueAfter: time.Duration(tidbInstance.Spec.HealthCheckInterval) * time.Second}, nil
 		} else if err != nil {
 			// requeue with err
-			r.logger.Error(err, "cannot create pod")
+			r.logger.Error(err, "cannot create tidb pod")
 			return ctrl.Result{}, err
 		} else if tidbPod.Status.Phase == corev1.PodFailed {
 			// pod errored out, need to recreate
@@ -141,7 +141,7 @@ func (r *TidbReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.
 			return ctrl.Result{}, nil
 		}
 	case tidbclusterv1.PhaseRunning_TiDB:
-		r.logger.Info("Phase: RUNNING")
+		r.logger.Info("Phase: TIDB RUNNING")
 
 		tidbPod := &corev1.Pod{}
 
