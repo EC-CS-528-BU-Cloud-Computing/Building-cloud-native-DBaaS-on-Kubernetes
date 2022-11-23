@@ -35,13 +35,21 @@ spec:
           spec:
             description: TikvSpec defines the desired state of Tikv
             properties:
-              foo:
-                description: Foo is an example field of Tikv. Edit tikv_types.go to
-                  remove/update
+              healthcheck.interval:
+                description: HealthCheckInterval is the interval for periodic health
+                  check, if pod failed/deleted, it should recreate the pod
+                type: integer
+              imagename:
+                description: Imagename is the name of image this Tidb instance is
+                  using
                 type: string
             type: object
           status:
             description: TikvStatus defines the observed state of Tikv
+            properties:
+              phase:
+                description: Phase represents current phase of tidb
+                type: string
             type: object
         type: object
     served: true
