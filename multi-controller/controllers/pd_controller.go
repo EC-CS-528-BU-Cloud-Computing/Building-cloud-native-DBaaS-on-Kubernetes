@@ -57,7 +57,8 @@ const defaultPdImage string = "pingcap/pd:latest"
 // - https://pkg.go.dev/sigs.k8s.io/controller-runtime@v0.13.0/pkg/reconcile
 func (r *PdReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
 	r.logger = log.FromContext(ctx)
-	r.logger.Info("PD reconcile")
+	r.logger.Info("PD reconcile, ", "namespace: ", req.Namespace, "name: ", req.Name)
+	//r.logger.Info(string(req.NamespacedName))
 
 	// TODO(user): your logic here
 	pdInstance := &tidbclusterv1.Pd{}

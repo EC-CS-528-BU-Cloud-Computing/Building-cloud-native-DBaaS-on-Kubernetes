@@ -24,6 +24,7 @@ import (
 	"github.com/go-logr/logr"
 	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/runtime"
+	"k8s.io/apimachinery/pkg/types"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/log"
@@ -91,7 +92,7 @@ func (r *TidbReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.
 	switch tidbInstance.Status.Phase {
 	case tidbclusterv1.PhasePending_TiDB:
 		//Check if pd is running
-		if !r.isPdRunning(ctx, req) {
+		if !r.isPdRunning(ctx) {
 			r.logger.Info("TIDB: Pd instance not ready")
 			return ctrl.Result{RequeueAfter: time.Duration(tidbInstance.Spec.HealthCheckInterval) * time.Second}, nil
 		} else {
@@ -213,23 +214,26 @@ func (r *TidbReconciler) updateTidbInstanceStatus(ctx *context.Context, tidbInst
 }
 
 // Check pd running
-func (r *TidbReconciler) isPdRunning(ctx context.Context, req ctrl.Request) bool {
-	/*
-		pdInstance := &tidbclusterv1.Pd{}
-		err := r.Get(context.TODO(), req.NamespacedName, pdInstance)
-		if err != nil {
-			if errors.IsNotFound(err) {
-				r.logger.Info("Pd instance not found")
-			} else {
-				r.logger.Info("Error reading pd instance")
-			}
-			return false
-		} else if pdInstance.Status.Phase != tidbclusterv1.PhaseRunning_TiDB {
-			r.logger.Info("Pd instance not running")
-			return false
+func (r *TidbReconciler) isPdRunning(ctx context.Context) bool {
+	pdInstance := &tidbclusterv1.Pd{}
+	pdNamespacedName := types.NamespacedName{
+		Namespace: "default",
+		Name:      "pd-sample",
+	}
+	err := r.Get(context.TODO(), pdNamespacedName, pdInstance)
+	if err != nil {
+		if errors.IsNotFound(err) {
+			r.logger.Info("Pd instance not found")
+		} else {
+			r.logger.Info("Error reading pd instance")
 		}
-		return true
-	*/
-	time.Sleep(10 * time.Second)
+		return false
+	} else if pdInstance.Status.Phase != tidbclusterv1.PhaseRunning_PD {
+		r.logger.Info("Pd instance not running")
+		return false
+	}
 	return true
+
+	//time.Sleep(10 * time.Second)
+	//return true
 }
