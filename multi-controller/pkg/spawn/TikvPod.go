@@ -19,6 +19,16 @@ func NewTikvPod(cr *tidbclusterv1.Tikv) *corev1.Pod {
 			Labels:    labels,
 		},
 		Spec: corev1.PodSpec{
+			Volumes: []corev1.Volume{
+				{
+					Name: "tikv-pv-storage",
+					VolumeSource: corev1.VolumeSource{
+						PersistentVolumeClaim: &corev1.PersistentVolumeClaimVolumeSource{
+							ClaimName: "tikv-pv-claim",
+						},
+					},
+				},
+			},
 			Containers: []corev1.Container{
 				{
 					Name:  "tikv",
@@ -31,6 +41,12 @@ func NewTikvPod(cr *tidbclusterv1.Tikv) *corev1.Pod {
 					},
 					Command: []string{"/tikv-server"},
 					Args:    []string{"--pd=pd-svc:2379"},
+					VolumeMounts: []corev1.VolumeMount{
+						{
+							MountPath: "/tmp/tikv/store",
+							Name:      "tikv-pv-storage",
+						},
+					},
 				},
 			},
 			RestartPolicy: corev1.RestartPolicyOnFailure,

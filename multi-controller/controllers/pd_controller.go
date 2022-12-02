@@ -227,6 +227,8 @@ func (r *PdReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Re
 		return ctrl.Result{}, nil
 	}
 	//TODO: think about service creation logic
+
+	// update status
 	err = r.updatePDInstanceStatus(&ctx, pdInstance)
 	if err != nil {
 		return ctrl.Result{}, err

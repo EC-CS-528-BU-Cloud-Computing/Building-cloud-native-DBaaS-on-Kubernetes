@@ -25,13 +25,13 @@ func CreatePdSVC(cr *tidbclusterv1.Pd) *corev1.Service {
 					Port:       2379,
 					Protocol:   "TCP",
 					TargetPort: intstr.FromInt(2379),
-					Name:       "port1",
+					Name:       "client-port",
 				},
 				{
 					Port:       2380,
 					Protocol:   "TCP",
 					TargetPort: intstr.FromInt(2380),
-					Name:       "port2",
+					Name:       "peer-port",
 				},
 			},
 			//Here it is pretty static, using cr label for svc selector, maybe change in the future?
