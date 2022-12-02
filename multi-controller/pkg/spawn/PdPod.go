@@ -19,16 +19,18 @@ func NewPdPod(cr *tidbclusterv1.Pd) *corev1.Pod {
 			Labels:    labels,
 		},
 		Spec: corev1.PodSpec{
-			Volumes: []corev1.Volume{
-				{
-					Name: "pd-pv-storage",
-					VolumeSource: corev1.VolumeSource{
-						PersistentVolumeClaim: &corev1.PersistentVolumeClaimVolumeSource{
-							ClaimName: "pd-pv-claim",
+			/*
+				Volumes: []corev1.Volume{
+					{
+						Name: "pd-pv-storage",
+						VolumeSource: corev1.VolumeSource{
+							PersistentVolumeClaim: &corev1.PersistentVolumeClaimVolumeSource{
+								ClaimName: "pd-pv-claim",
+							},
 						},
 					},
 				},
-			},
+			*/
 			Containers: []corev1.Container{
 				{
 					Name:  "pd",
@@ -55,12 +57,14 @@ func NewPdPod(cr *tidbclusterv1.Pd) *corev1.Pod {
 							},
 						},
 					},
-					VolumeMounts: []corev1.VolumeMount{
-						{
-							MountPath: "/default.pd-pd-sample",
-							Name:      "pd-pv-storage",
+					/*
+						VolumeMounts: []corev1.VolumeMount{
+							{
+								MountPath: "/default.pd-pd-sample",
+								Name:      "pd-pv-storage",
+							},
 						},
-					},
+					*/
 				},
 			},
 			RestartPolicy: corev1.RestartPolicyOnFailure,
