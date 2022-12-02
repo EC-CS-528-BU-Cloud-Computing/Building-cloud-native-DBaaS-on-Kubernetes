@@ -199,6 +199,12 @@ func (r *PdReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Re
 			*/
 			r.logger.Info("PD pod disappeared in RUNNING phase, return to POD creating")
 			pdInstance.Status.Phase = tidbclusterv1.PhaseCreating_PD_Pod
+			err = r.updatePDInstanceStatus(&ctx, pdInstance)
+			if err != nil {
+				return ctrl.Result{}, err
+			}
+			//Start creating pod after health check interval
+			return ctrl.Result{RequeueAfter: time.Second}, nil
 		} else if err != nil {
 			// requeue with err
 			r.logger.Error(err, "cannot create PD pod")
@@ -221,6 +227,11 @@ func (r *PdReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Re
 		return ctrl.Result{}, nil
 	}
 	//TODO: think about service creation logic
+	err = r.updatePDInstanceStatus(&ctx, pdInstance)
+	if err != nil {
+		return ctrl.Result{}, err
+	}
+
 	return ctrl.Result{}, nil
 }
 
