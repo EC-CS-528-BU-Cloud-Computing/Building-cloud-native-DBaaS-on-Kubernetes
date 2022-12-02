@@ -204,7 +204,7 @@ func (r *PdReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Re
 				return ctrl.Result{}, err
 			}
 			//Start creating pod after health check interval
-			return ctrl.Result{RequeueAfter: time.Duration(pdInstance.Spec.HealthCheckInterval) * time.Second}, nil
+			return ctrl.Result{RequeueAfter: time.Second}, nil
 		} else if err != nil {
 			// requeue with err
 			r.logger.Error(err, "cannot create PD pod")
@@ -233,6 +233,7 @@ func (r *PdReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Re
 	if err != nil {
 		return ctrl.Result{}, err
 	}
+
 	return ctrl.Result{}, nil
 }
 
