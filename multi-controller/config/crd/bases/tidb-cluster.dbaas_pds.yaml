@@ -47,6 +47,10 @@ spec:
           status:
             description: PdStatus defines the observed state of Pd
             properties:
+              healthcheck.interval:
+                description: HealthCheckInterval is the interval for periodic health
+                  check, if pod failed/deleted, it should recreate the pod
+                type: integer
               phase:
                 description: Phase represents current phase of tidb
                 type: string

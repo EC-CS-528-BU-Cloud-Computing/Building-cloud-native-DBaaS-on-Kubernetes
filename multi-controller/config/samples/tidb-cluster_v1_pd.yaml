@@ -9,4 +9,5 @@ metadata:
     app.kubernetes.io/created-by: multi-controller
   name: pd-sample
 spec:
+  healthcheck.interval: 20
   # TODO(user): Add fields here

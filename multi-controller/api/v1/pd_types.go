@@ -47,6 +47,9 @@ type PdStatus struct {
 
 	//Phase represents current phase of tidb
 	Phase string `json:"phase,omitempty"`
+
+	// HealthCheckInterval is the interval for periodic health check, if pod failed/deleted, it should recreate the pod
+	HealthCheckInterval int `json:"healthcheck.interval,omitempty"`
 }
 
 //+kubebuilder:object:root=true

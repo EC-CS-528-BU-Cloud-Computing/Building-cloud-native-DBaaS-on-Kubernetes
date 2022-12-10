@@ -86,6 +86,7 @@ func (r *PdReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Re
 
 	if pdInstance.Spec.HealthCheckInterval == 0 {
 		pdInstance.Spec.HealthCheckInterval = 5
+		pdInstance.Status.HealthCheckInterval = 5
 	}
 
 	switch pdInstance.Status.Phase {
@@ -218,6 +219,14 @@ func (r *PdReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Re
 				return ctrl.Result{}, err
 			}
 			pdInstance.Status.Phase = tidbclusterv1.PhaseCreating_PD_Pod
+		} else if pdInstance.Spec.HealthCheckInterval != pdInstance.Status.HealthCheckInterval {
+			pdInstance.Status.HealthCheckInterval = pdInstance.Spec.HealthCheckInterval
+			err = r.updatePDInstanceStatus(&ctx, pdInstance)
+			if err != nil {
+				return ctrl.Result{}, err
+			}
+			//Start creating pod after health check interval
+			return ctrl.Result{RequeueAfter: time.Second}, nil
 		} else {
 			//Pod already exist and running, do nothing
 			return ctrl.Result{RequeueAfter: time.Duration(pdInstance.Spec.HealthCheckInterval) * time.Second}, nil
