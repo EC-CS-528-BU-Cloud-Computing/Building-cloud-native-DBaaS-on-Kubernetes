@@ -63,6 +63,7 @@ The files we submit will contain the below information.
 ```
  all the codes of the project s
  a document to describe the proposal
+ a shell script to run the operator
 ```
 
 The minimum acceptance criteria is to finish below functions of operator 
