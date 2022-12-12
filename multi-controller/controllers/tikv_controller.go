@@ -215,6 +215,4 @@ func (r *TikvReconciler) isPdRunning(ctx context.Context) bool {
 	}
 	return true
 
-	//time.Sleep(10 * time.Second)
-	//return true
 }

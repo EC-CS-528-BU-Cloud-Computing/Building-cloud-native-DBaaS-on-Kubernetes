@@ -180,24 +180,6 @@ func (r *PdReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Re
 		err = r.Get(context.TODO(), req.NamespacedName, pdPod)
 		if err != nil && errors.IsNotFound(err) {
 			//Smh the pod disappeared create the pod
-			/*
-				pod := spawn.NewTidbPod(instance)
-				err := ctrl.SetControllerReference(instance, pod, r.Scheme)
-				if err != nil {
-					return ctrl.Result{}, err
-				}
-				err = r.Create(context.TODO(), pod)
-				if err != nil {
-					return ctrl.Result{}, err
-				}
-				logger.Info("Pod Created successfully", "name", pod.Name)
-				instance.Status.Phase = tidbclusterv1.PhaseRunning
-				err = r.UpdateInstanceStatus(&ctx, instance)
-				if err != nil {
-					return ctrl.Result{}, err
-				}
-				return ctrl.Result{RequeueAfter: time.Duration(instance.Spec.HealthCheckInterval) * time.Second}, nil
-			*/
 			r.logger.Info("PD pod disappeared in RUNNING phase, return to POD creating")
 			pdInstance.Status.Phase = tidbclusterv1.PhaseCreating_PD_Pod
 			err = r.updatePDInstanceStatus(&ctx, pdInstance)
