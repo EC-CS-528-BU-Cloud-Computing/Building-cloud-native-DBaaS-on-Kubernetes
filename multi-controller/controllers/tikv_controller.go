@@ -152,8 +152,19 @@ func (r *TikvReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.
 			// requeue with err
 			r.logger.Error(err, "cannot create TiKV sts")
 			return ctrl.Result{}, err
+		} else if instance.Spec.Replica != instance.Status.Replica {
+			r.logger.Info("updating tikv sts")
+			instance.Status.Replica = instance.Spec.Replica
+			newReplica := int32(instance.Spec.Replica)
+			tikvSts.Spec.Replicas = &(newReplica) // reduce replica count
+			updateErr := r.Client.Update(context.TODO(), tikvSts)
+			if updateErr != nil {
+				r.logger.Error(err, "cannot update TiKV sts, error")
+				return ctrl.Result{}, err
+			}
+			return ctrl.Result{RequeueAfter: time.Duration(instance.Spec.HealthCheckInterval) * time.Second}, nil
 		} else {
-			//Pod already exist and running, do nothing
+			//sts already exist and running, do nothing
 			return ctrl.Result{RequeueAfter: time.Duration(instance.Spec.HealthCheckInterval) * time.Second}, nil
 		}
 	default:
