@@ -7,3 +7,4 @@ kubectl apply -f pd-pv.yaml
 kubectl apply -f pd-pvc.yaml
 kubectl apply -f tikv-pv.yaml
 kubectl apply -f tikv-pvc.yaml
+kubectl apply -f tikv-svc.yaml

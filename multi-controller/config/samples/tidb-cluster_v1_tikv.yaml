@@ -7,6 +7,6 @@ metadata:
     app.kubernetes.io/part-of: multi-controller
     app.kuberentes.io/managed-by: kustomize
     app.kubernetes.io/created-by: multi-controller
-  name: tikv-sample
+  name: tikv
 spec:
   # TODO(user): Add fields here

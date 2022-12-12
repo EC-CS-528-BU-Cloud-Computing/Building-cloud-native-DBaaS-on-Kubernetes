@@ -11,7 +11,7 @@ spec:
         #- --pd=pd-svc:2379
       image: pingcap/tikv
       args:
-        - --pd=pd-svc:2379"
+        - "--pd=pd-svc:2379"
       name: tikv
       ports:
         - containerPort: 20160

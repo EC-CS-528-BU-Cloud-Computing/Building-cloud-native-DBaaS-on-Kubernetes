@@ -29,7 +29,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/log"
 
-	corev1 "k8s.io/api/core/v1"
+	appv1 "k8s.io/api/apps/v1"
 
 	tidbclusterv1 "cluster-operator/api/v1"
 	"cluster-operator/pkg/spawn"
@@ -89,6 +89,11 @@ func (r *TikvReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.
 		instance.Spec.HealthCheckInterval = 5
 	}
 
+	if instance.Spec.Replica == 0 {
+		instance.Spec.Replica = 3
+		instance.Status.Replica = 3
+	}
+
 	switch instance.Status.Phase {
 	case tidbclusterv1.PhasePending_TiKV:
 		r.logger.Info("Phase: TIKV PENDING")
@@ -102,23 +107,23 @@ func (r *TikvReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.
 		}
 	case tidbclusterv1.PhaseCreating_TiKV:
 		r.logger.Info("Phase: TIKV CREATING")
-		pod := spawn.NewTikvPod(instance)
-		err := ctrl.SetControllerReference(instance, pod, r.Scheme)
+		sts := spawn.NewTikvSts(instance)
+		err := ctrl.SetControllerReference(instance, sts, r.Scheme)
 		if err != nil {
 			return ctrl.Result{}, err
 		}
 
-		tikvPod := &corev1.Pod{}
+		tikvSts := &appv1.StatefulSet{}
 
-		//Check if pod already exist
-		err = r.Get(context.TODO(), req.NamespacedName, tikvPod)
+		//Check if sts already exist
+		err = r.Get(context.TODO(), req.NamespacedName, tikvSts)
 		if err != nil && errors.IsNotFound(err) {
-			//Pod does not exist create the pod
-			err = r.Create(context.TODO(), pod)
+			//sts does not exist create the sts
+			err = r.Create(context.TODO(), sts)
 			if err != nil {
 				return ctrl.Result{}, err
 			}
-			r.logger.Info("Pod Created successfully", "name", pod.Name)
+			r.logger.Info("Pod Created successfully", "name", sts.Name)
 			instance.Status.Phase = tidbclusterv1.PhaseRunning_TiKV
 			err = r.updateTikvInstanceStatus(&ctx, instance)
 			if err != nil {
@@ -127,44 +132,26 @@ func (r *TikvReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.
 			return ctrl.Result{RequeueAfter: time.Duration(instance.Spec.HealthCheckInterval) * time.Second}, nil
 		} else if err != nil {
 			// requeue with err
-			r.logger.Error(err, "cannot create pod")
+			r.logger.Error(err, "cannot create tikv statefulset")
 			return ctrl.Result{}, err
-		} else if tikvPod.Status.Phase == corev1.PodFailed {
-			// pod errored out, need to recreate
-			r.logger.Info("TiKV pod failed", "reason", tikvPod.Status.Reason, "message", tikvPod.Status.Message)
-			// delete failed pod
-			err = r.Delete(context.TODO(), tikvPod)
-			if err != nil {
-				return ctrl.Result{}, err
-			}
-			instance.Status.Phase = tidbclusterv1.PhasePending_TiKV
 		} else {
-			//Pod already exist and running, do nothing
+			//Stateful set already exist and running, do nothing
 			return ctrl.Result{}, nil
 		}
 	case tidbclusterv1.PhaseRunning_TiKV:
 		r.logger.Info("Phase: TIKV RUNNING")
 
-		tikvPod := &corev1.Pod{}
+		tikvSts := &appv1.StatefulSet{}
 
 		//Get current pod
-		err = r.Get(context.TODO(), req.NamespacedName, tikvPod)
+		err = r.Get(context.TODO(), req.NamespacedName, tikvSts)
 		if err != nil && errors.IsNotFound(err) {
-			r.logger.Info("TiKV pod disappeared in RUNNING phase, return to PENDING")
+			r.logger.Info("TiKV sts disappeared in RUNNING phase, return to PENDING")
 			instance.Status.Phase = tidbclusterv1.PhasePending_TiKV
 		} else if err != nil {
 			// requeue with err
-			r.logger.Error(err, "cannot create TiKV pod")
+			r.logger.Error(err, "cannot create TiKV sts")
 			return ctrl.Result{}, err
-		} else if tikvPod.Status.Phase == corev1.PodFailed {
-			// pod errored out, need to recreate
-			r.logger.Info("TiKV pod failed", "reason", tikvPod.Status.Reason, "message", tikvPod.Status.Message)
-			// delete failed pod
-			err = r.Delete(context.TODO(), tikvPod)
-			if err != nil {
-				return ctrl.Result{}, err
-			}
-			instance.Status.Phase = tidbclusterv1.PhasePending_TiKV
 		} else {
 			//Pod already exist and running, do nothing
 			return ctrl.Result{RequeueAfter: time.Duration(instance.Spec.HealthCheckInterval) * time.Second}, nil

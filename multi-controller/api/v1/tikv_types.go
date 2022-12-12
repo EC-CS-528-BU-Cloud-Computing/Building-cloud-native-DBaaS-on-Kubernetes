@@ -38,6 +38,9 @@ type TikvSpec struct {
 
 	// HealthCheckInterval is the interval for periodic health check, if pod failed/deleted, it should recreate the pod
 	HealthCheckInterval int `json:"healthcheck.interval,omitempty"`
+
+	//Number of Replica
+	Replica int `json:"replica,omitempty"`
 }
 
 // TikvStatus defines the observed state of Tikv
@@ -47,6 +50,9 @@ type TikvStatus struct {
 
 	//Phase represents current phase of tidb
 	Phase string `json:"phase,omitempty"`
+
+	//Phase represents current phase of tidb
+	Replica int `json:"replica,omitempty"`
 }
 
 //+kubebuilder:object:root=true

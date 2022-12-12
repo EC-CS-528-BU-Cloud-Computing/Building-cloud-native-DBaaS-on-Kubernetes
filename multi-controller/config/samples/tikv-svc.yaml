@@ -1,0 +1,15 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tikv-svc
+
+spec:
+  clusterIP: None
+  selector:
+    app: tikv-sts
+
+  ports:
+  - port: 20160
+    protocol: TCP
+    targetPort: 20160
