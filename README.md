@@ -57,7 +57,7 @@ cd multi-controller
 
 ## 5. Acceptance criteria
 
-This section discusses the minimum acceptance criteria at the end of the project.
+This section discusses the acceptance criteria at the end of the project.
 The files we submit will contain the below information.
 
 ```
@@ -66,12 +66,13 @@ The files we submit will contain the below information.
  a shell script to run the operator
 ```
 
-The minimum acceptance criteria is to finish below functions of operator 
+The acceptance criteria is to finish below functions of operator 
 ```
 starting / pausing / scaling out / in a cluster of TIiDB on kubernetes
 simulating failure in all or part of your cluster to test its resilience
 monitoring the pod running status
 ```
+And we have implemented them all.
 
 ## 6.  Release Planning:
 
