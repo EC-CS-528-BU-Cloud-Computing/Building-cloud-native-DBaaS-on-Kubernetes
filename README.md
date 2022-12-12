@@ -43,11 +43,17 @@ Design Implications and Discussion:
 This section discusses the implications and reasons of the design decisions made during the global architecture design.
 -->
 TiDB will be deployed on Kubernetes. To provide automatic scaling, upgrading, monitoring and self-healing, an operator will be created and integrated with the cluster to operate on TiDB CRD. The operator will provide full life cycle management, to provide scalability and high availability. The operator will provide full life cycle management, to guarantee scalability and high availability. The architecture of our final deliverable is as follows:
+
 ![avatar](/pics/deliverable.png)
+
 The deliverable contains three separate controllers in the operator, each responisble of controlling one of the three components. In the TiDB cluster managed by our operator, each component has a corresponding custom resource (CR). The three components communicate over a service, in order to enable fail-over. PD and TiKV are stateful components, therefore they are connected to persistent volumes (PV), in order to preserve data upon failure. External clients will query the cluster via a service that exposes the TiDB cluster. The Kubernetes cluster is also equipped with a monitoring stack composed of Prometheus and Grafana. This combination gives us a better insight of the status of the cluster, and makes it easier to trouble shoot.
-To fullfill the design objectives, we implemented our operator according to our perspective state machine of the components. The state transition diagram is as follows:
-![avatar](/pics/states.png)
-After our test, our operator fulfills completely the design objectives.
+
+Prerequisites to run the operator on a local Kubernetes cluster using Kind: [Kind](https://kind.sigs.k8s.io/), [Docker](https://www.docker.com/), [Go(1.17+)](https://go.dev/), [Kubectl](https://kubernetes.io/docs/tasks/tools/) and [MySQL](https://www.mysql.com/) client.
+To start the cluster and the operator run:
+```bash
+cd multi-controller
+./buildAndRun.sh
+```
 
 ## 5. Acceptance criteria
 
@@ -55,7 +61,7 @@ This section discusses the minimum acceptance criteria at the end of the project
 The files we submit will contain the below information.
 
 ```
- all the codes of the project
+ all the codes of the project s
  a document to describe the proposal
 ```
 
