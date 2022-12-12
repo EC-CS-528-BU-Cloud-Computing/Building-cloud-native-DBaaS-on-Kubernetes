@@ -4,9 +4,11 @@ sudo kind delete cluster
 sudo kind create cluster
 
 sudo make install
-sudo sh ./config/samples/deploy.sh 
-sudo sh ./config/samples/prometheusDepl.sh 
+cd config/samples
+sudo sh deploy.sh 
+sudo sh prometheusDepl.sh 
+cd ../..
 sudo make run
 
 # new window
-sudo kubectl get pods
+# sudo kubectl get pods
