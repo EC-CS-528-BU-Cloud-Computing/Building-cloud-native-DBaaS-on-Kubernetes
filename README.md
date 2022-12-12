@@ -46,28 +46,24 @@ TiDB will be deployed on Kubernetes. To provide automatic scaling, upgrading, mo
 
 ## 5. Acceptance criteria
 
-This section discusses the minimum acceptance criteria at the end of the project and stretch goals.
+This section discusses the minimum acceptance criteria at the end of the project.
 The files we submit will contain the below information.
 
 ```
+ all the codes of the project
  a document to describe the proposal
- software user manual 
- a shell file to deploy and implement the code automatically 
- a document contains a description of labor and cooperation 
 ```
 
 The minimum acceptance criteria is to finish below functions of operator 
 ```
 starting / pausing / scaling out / in a cluster of TIiDB on kubernetes
 simulating failure in all or part of your cluster to test its resilience
-upgrading the application
-choosing a leader for TiDB clusters
+monitoring the pod running status
 ```
-Stretch goals are 
 
 ## 6.  Release Planning:
 
-We will be using SCRUM for developing this project. Every group member will first get familiar with the project and then we will decide the detail of releasing plan next week.
+We will be using SCRUM for developing this project. At present, all the functions in the scope are implemented.
 
 <!-- Release planning section describes how the project will deliver incremental sets of features and functions in a series of releases to completion. Identification of user stories associated with iterations that will ease/guide sprint planning sessions is encouraged. Higher level details for the first iteration is expected. -->
 
