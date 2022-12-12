@@ -12,7 +12,7 @@ The goal for this project is to create an operator that manages the lifecycle of
 
 The principle users of the project are people who manage the workflow and operate with TIDB clusters, where TiDB is a HTAP relational database easily scaled out as other NoSQL databases as well as provide support for data consistency and distributed transaction support. 
 
-In this project, we will build an operator that manages the lifecycle of TiDB clusters on Kubernetes, which will allow users to manage their TiBD clusters, like starting the cluster, pausing the cluster, and scaling out/in the cluster in a declarative way. As well as build an observability ecosystem for the operator, including metrics, logging, tracing, and alerting. Using modern cloud-native o11y systems, like Prometheus, Grafana, Jaeger, and Loki.
+In this project, we will build an operator that manages the lifecycle of TiDB clusters on Kubernetes, which will allow users to manage their TiDB clusters, like starting the cluster, pausing the cluster, and scaling out/in the cluster in a declarative way. As well as build an observability ecosystem for the operator, including metrics, logging, tracing, and alerting. Using modern cloud-native o11y systems, like Prometheus, Grafana, Jaeger, and Loki.
 
 ** **
 
@@ -23,9 +23,9 @@ The features of this project will include:
     Starting and pausing cluster - in scope
     Scaling in or out of cluster - in scope
     Monitoring and logging cluster - in scope
-    Backup and restoring cluster - not in scope
+    Backup and restoring cluster - in scope
 
-In this project, a separate controller will be created for each feature. Each controller will correspond to a specific CRD.
+In this project, a separate controller will be created for each of the three components. Each controller will correspond to a specific CRD.
 
 
 ## 4. Solution Concept
@@ -42,7 +42,12 @@ Design Implications and Discussion:
 
 This section discusses the implications and reasons of the design decisions made during the global architecture design.
 -->
-TiDB will be deployed on Kubernetes. To provide automatic scaling, upgrading, monitoring and self-healing, an operator will be created and integrated with the cluster to operate on TiDB CRD. The operator will provide full life cycle management, to provide scalability and high availability. The operator will provide full life cycle management, to guarantee scalability and high availability.
+TiDB will be deployed on Kubernetes. To provide automatic scaling, upgrading, monitoring and self-healing, an operator will be created and integrated with the cluster to operate on TiDB CRD. The operator will provide full life cycle management, to provide scalability and high availability. The operator will provide full life cycle management, to guarantee scalability and high availability. The architecture of our final deliverable is as follows:
+![avatar](/pics/deliverable.png)
+The deliverable contains three separate controllers in the operator, each responisble of controlling one of the three components. In the TiDB cluster managed by our operator, each component has a corresponding custom resource (CR). The three components communicate over a service, in order to enable fail-over. PD and TiKV are stateful components, therefore they are connected to persistent volumes (PV), in order to preserve data upon failure. External clients will query the cluster via a service that exposes the TiDB cluster. The Kubernetes cluster is also equipped with a monitoring stack composed of Prometheus and Grafana. This combination gives us a better insight of the status of the cluster, and makes it easier to trouble shoot.
+To fullfill the design objectives, we implemented our operator according to our perspective state machine of the components. The state transition diagram is as follows:
+![avatar](/pics/states.png)
+After our test, our operator fulfills completely the design objectives.
 
 ## 5. Acceptance criteria
 
