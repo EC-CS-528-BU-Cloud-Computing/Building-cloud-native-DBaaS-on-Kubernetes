@@ -20,7 +20,7 @@ In this project, we will build an operator that manages the lifecycle of TiDB cl
 
 The features of this project will include:
 
-    Starting and pausing cluster - in scope
+    Starting and deploying cluster - in scope
     Scaling in or out of cluster - in scope
     Monitoring and logging cluster - in scope
     Backup and restoring cluster - in scope
@@ -68,7 +68,7 @@ The files we submit will contain the below information.
 
 The acceptance criteria is to finish below functions of operator 
 ```
-starting / pausing / scaling out / in a cluster of TIiDB on kubernetes
+starting / deploying / scaling out / in a cluster of TIiDB on kubernetes
 simulating failure in all or part of your cluster to test its resilience
 monitoring the pod running status
 ```
